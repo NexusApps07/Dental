@@ -34,8 +34,9 @@ export default function NexusMasterPortal() {
   // PWA Logic
   const [installPrompt, setInstallPrompt] = useState<any>(null);
 
-  // --- BRANDING ---
-  const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Nexus Master";
+  // --- BRANDING DNA (Injected by hunt.sh) ---
+  const businessName = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Nexus Master Lab";
+  const businessCity = process.env.NEXT_PUBLIC_BUSINESS_CITY || "Premium Experience";
   const brandColor = process.env.NEXT_PUBLIC_THEME_COLOR || "#38bdf8";
 
   // --- PERSISTENCE & MOUNTING ---
@@ -46,7 +47,6 @@ export default function NexusMasterPortal() {
     if (savedBookings) setBookings(JSON.parse(savedBookings));
     if (savedPets) setPets(JSON.parse(savedPets));
 
-    // PWA Install Prompt Listener
     const handler = (e: any) => {
       e.preventDefault();
       setInstallPrompt(e);
@@ -136,25 +136,34 @@ export default function NexusMasterPortal() {
   if (!isMounted) return <div className="min-h-screen bg-black" />;
 
   return (
-    <div className="max-w-md mx-auto min-h-screen pb-32 relative bg-[#050505] text-neutral-200 font-sans overflow-x-hidden">
+    <div className="max-w-md mx-auto min-h-screen pb-32 relative bg-[#050505] text-neutral-200 font-sans overflow-x-hidden selection:bg-sky-500/30">
       
       {/* LUXURY GLOW */}
       <div className="fixed top-[-5%] left-[-10%] w-72 h-72 bg-[#38bdf8]/10 blur-[120px] rounded-full pointer-events-none" />
 
-      {/* HEADER */}
-      <header className="px-6 pt-12 pb-6 flex justify-between items-center relative z-10">
-        <div>
-          <h1 className="text-3xl font-serif text-white italic">{businessName}</h1>
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500 mt-1">Premium Portal</p>
-        </div>
-        <div className="flex gap-3">
-          <button onClick={handleInstallClick} className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-90 transition-all">
-            <Download size={18} />
-          </button>
-          <button onClick={() => setShowNotifications(!showNotifications)} className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white relative active:scale-90 transition-all">
-            <Bell size={18} />
-            <div className="absolute top-2.5 right-2.5 h-1.5 w-1.5 bg-[#38bdf8] rounded-full shadow-[0_0_8px_#38bdf8]" />
-          </button>
+      {/* HEADER: Personalization Focus */}
+      <header className="px-6 pt-12 pb-6 relative z-10">
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-serif text-white tracking-wide italic">
+              {businessName}
+            </h1>
+            <div className="flex items-center gap-1.5 mt-2">
+               <div className="h-1 w-1 rounded-full bg-[#38bdf8] shadow-[0_0_8px_rgba(14,165,233,0.8)]" />
+               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
+                 {businessCity}
+               </p>
+            </div>
+          </div>
+          <div className="flex gap-3">
+            <button onClick={handleInstallClick} className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white active:scale-95 transition-all">
+              <Download size={18} />
+            </button>
+            <button onClick={() => setShowNotifications(!showNotifications)} className="h-10 w-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white relative active:scale-95 transition-all">
+              <Bell size={18} />
+              <div className="absolute top-2.5 right-2.5 h-1.5 w-1.5 bg-[#38bdf8] rounded-full shadow-[0_0_8px_#38bdf8]" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -166,7 +175,7 @@ export default function NexusMasterPortal() {
               <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-4">Live Updates</p>
               <div className="flex gap-4">
                 <div className="h-10 w-10 bg-[#38bdf8]/20 rounded-2xl flex items-center justify-center text-[#38bdf8]"><CheckCircle size={18}/></div>
-                <div><p className="text-xs text-white">System Optimized</p><p className="text-[10px] text-neutral-500">React Compiler Active.</p></div>
+                <div><p className="text-xs text-white">System Optimized</p><p className="text-[10px] text-neutral-500">Welcome to {businessName} Portal.</p></div>
               </div>
             </div>
           </motion.div>
@@ -177,8 +186,8 @@ export default function NexusMasterPortal() {
         <AnimatePresence mode="wait">
           {activeTab === 'experience' && (
             <motion.div key="exp" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="space-y-6">
-              <div className="relative w-full h-60 overflow-hidden rounded-[2.5rem] border border-white/5">
-                <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7" className="absolute inset-0 w-full h-full object-cover" alt="Hero" />
+              <div className="relative w-full h-60 overflow-hidden rounded-[2.5rem] border border-white/5 group">
+                <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7" className="absolute inset-0 w-full h-full object-cover grayscale-[0.2] transition-transform duration-700 group-hover:scale-105" alt="Hero" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
                 <div className="absolute bottom-6 left-6"><span className="px-2 py-1 bg-white text-black text-[8px] font-black uppercase tracking-widest rounded">Priority Access</span><h2 className="text-white text-2xl font-serif mt-2 italic">Refined Care.</h2></div>
               </div>
@@ -192,11 +201,11 @@ export default function NexusMasterPortal() {
               {bookings.length === 0 ? (
                 <div className="py-20 text-center bg-neutral-900/20 border border-white/5 rounded-[2.5rem] mt-4 flex flex-col items-center">
                    <History size={32} className="text-neutral-800 mb-4" />
-                   <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest">No History Found</p>
+                   <p className="text-neutral-500 text-[10px] font-black uppercase tracking-widest">Vault is Empty</p>
                 </div>
               ) : (
                 bookings.map(b => (
-                  <div key={b.id} className="bg-neutral-900/40 border border-white/5 p-6 rounded-[2rem] flex justify-between items-center group">
+                  <div key={b.id} className="bg-neutral-900/40 border border-white/5 p-6 rounded-[2rem] flex justify-between items-center">
                     <div><p className="text-[10px] font-black text-[#38bdf8] uppercase tracking-widest mb-1">{b.date} • {b.time}</p><h4 className="text-white font-medium">{b.service}</h4></div>
                     <div className="flex gap-2">
                       <button onClick={() => { setIsScheduling({id: b.id, name: b.service, price: b.price}); setSelectedDate(b.date); setSelectedTime(b.time); }} className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white transition-all"><Edit3 size={16}/></button>
@@ -216,7 +225,7 @@ export default function NexusMasterPortal() {
                   <div><h4 className="text-white font-medium">{p.name}</h4><p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">{p.breed}</p></div>
                 </div>
               ))}
-              <button onClick={() => setIsAddingPet(true)} className="w-full py-6 border-2 border-dashed border-white/5 rounded-[2.5rem] text-neutral-600 font-bold text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all">+ Add Member</button>
+              <button onClick={() => setIsAddingPet(true)} className="w-full py-6 border-2 border-dashed border-white/5 rounded-[2.5rem] text-neutral-600 font-bold text-[10px] uppercase tracking-[0.3em] active:scale-95 transition-all">+ Add Family</button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -258,7 +267,7 @@ export default function NexusMasterPortal() {
         {isAddingPet && (
           <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-3xl p-8 flex flex-col">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl font-serif text-white italic">Add Family</h2>
+              <h2 className="text-2xl font-serif text-white italic">Add Pet</h2>
               <button onClick={() => setIsAddingPet(false)} className="h-12 w-12 bg-neutral-900 rounded-full flex items-center justify-center text-neutral-400"><X size={20}/></button>
             </div>
             <div className="space-y-6 flex-1">
