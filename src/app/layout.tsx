@@ -4,7 +4,7 @@ import "./globals.css";
 
 // 1. IMPORT THE BRANDING COMPONENT (You were missing this!)
 import DynamicBranding from "@/components/DynamicBranding";
-import Header from "@/components/Header";
+import Header from "@/components/header";
 
 const sans = Outfit({ 
   subsets: ["latin"], 
