@@ -65,7 +65,7 @@ export default function RootLayout({
         {/* This is the magic script that renames the tab to "Island Dog" */}
         <DynamicBranding />
 
-        <Header />
+        <Navbar />
 
         <div className="fixed inset-0 bg-gradient-to-b from-black via-slate-950 to-black pointer-events-none -z-50" />
         
