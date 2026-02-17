@@ -10,6 +10,7 @@ import {
 
 // 1. IMPORT THE SMART TITLE COMPONENT
 import HeroTitle from "@/components/HeroTitle"; 
+import SmartCity from "@/components/SmartCity";
 
 export default function NexusMasterPortal() {
   const [activeTab, setActiveTab] = useState('experience');
@@ -156,8 +157,8 @@ export default function NexusMasterPortal() {
           <div className="flex items-center gap-2 mt-3 opacity-80">
              <MapPin size={14} style={{ color: brandColor }} />
              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400">
-               {brandCity}
-             </p>
+              <SmartCity />
+             </p> 
           </div>
         </motion.div>
         <button onClick={() => setShowInstallHelp(true)} className="h-12 w-12 rounded-xl flex items-center justify-center border border-white/10 bg-white/5 active:scale-95 transition-all">
