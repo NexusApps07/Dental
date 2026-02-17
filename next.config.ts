@@ -1,21 +1,17 @@
 import type { NextConfig } from "next";
 
-const isProd = process.env.NODE_ENV === 'production';
-
 const nextConfig: NextConfig = {
+  // 1. Required for hosting on GitHub Pages
   output: 'export',
-  basePath: isProd ? '/nexus-master-final' : '',
-  // assetPrefix should match basePath for GitHub Pages
-  assetPrefix: isProd ? '/nexus-master-final/' : '',
-  images: { 
-    unoptimized: true 
+
+  // 2. Ensures assets (CSS/Images) load correctly on sub-repo URLs
+  // This reads from the GitHub Action environment during the build
+  basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
+
+  // 3. Required because GitHub Pages doesn't support Next.js Image Optimization
+  images: {
+    unoptimized: true,
   },
-  // Promotion: reactCompiler is no longer under 'experimental' in v16
-  reactCompiler: true, 
-  typescript: { 
-    ignoreBuildErrors: true 
-  },
-  // Note: eslint block removed as per v16 requirements
 };
 
 export default nextConfig;
