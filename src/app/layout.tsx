@@ -1,29 +1,29 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
+// Import the branding helper we just created
+import DynamicBranding from "@/components/DynamicBranding";
 
 // --- FONT CONFIGURATION ---
-// Outfit: Modern, clean sans-serif for UI and readability
 const sans = Outfit({ 
   subsets: ["latin"], 
   variable: '--font-sans',
   display: 'swap',
 });
 
-// Playfair Display: High-end luxury serif for headings and branding
 const serif = Playfair_Display({ 
   subsets: ["latin"], 
   variable: '--font-serif',
   display: 'swap',
 });
 
-// --- DEPLOYMENT CONSTANTS ---
-// These ensure the PWA manifest and icons are found on GitHub Pages
-const APP_NAME = process.env.NEXT_PUBLIC_BUSINESS_NAME || "Nexus Master Lab";
+// --- DEPLOYMENT CONSTANTS (UPDATED FOR AUTOMATION) ---
+// CRITICAL FIX: We now look for the environment variable injected by GitHub Actions first.
+// If that is missing (local dev), we fall back to an empty string.
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
+const APP_NAME = "Premium Client Portal"; 
 const THEME_COLOR = process.env.NEXT_PUBLIC_THEME_COLOR || "#38bdf8";
-const REPO_NAME = "nexus-master-final";
-const isProd = process.env.NODE_ENV === 'production';
-const BASE_PATH = isProd ? `/${REPO_NAME}` : "";
 
 // --- METADATA & PWA BRAIN ---
 export const metadata: Metadata = {
@@ -31,7 +31,8 @@ export const metadata: Metadata = {
     default: APP_NAME,
     template: `%s | ${APP_NAME}`,
   },
-  description: "Premium Client Portal - Nexus Master Final",
+  description: "Premium Client Portal - Official App",
+  // These now use the dynamic BASE_PATH so icons work on every new repo
   manifest: `${BASE_PATH}/manifest.json`, 
   icons: {
     icon: `${BASE_PATH}/favicon.ico`,
@@ -67,6 +68,12 @@ export default function RootLayout({
           bg-[#050505]
         `}
       >
+        {/* This component runs silently on load. 
+           It looks at the URL (e.g. /west-ashley-paws) and updates the 
+           browser tab title automatically. 
+        */}
+        <DynamicBranding />
+
         {/* Persistent background gradient for the luxury aesthetic */}
         <div className="fixed inset-0 bg-gradient-to-b from-black via-slate-950 to-black pointer-events-none -z-50" />
         
