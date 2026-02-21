@@ -1,20 +1,20 @@
 {
-  "name": "Nexus Master Lab",
-  "short_name": "Nexus",
-  "description": "Premium Client Portal",
-  "start_url": "/nexus-master-final/",
+  "name": "Aesthetic Dental Portal",
+  "short_name": "Portal",
+  "description": "Premium Client Concierge",
+  "start_url": "/lumina-dental-aesthetics/", 
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#38bdf8",
+  "background_color": "#050505",
+  "theme_color": "#0EA5E9",
   "icons": [
     {
-      "src": "/nexus-master-final/icon-192x192.png",
+      "src": "/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/nexus-master-final/icon-512x512.png",
+      "src": "/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
