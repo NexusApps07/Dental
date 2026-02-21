@@ -3,41 +3,37 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  History, ShoppingBag, Edit3, Trash2, X, ChevronRight, 
-  CheckCircle, Bell, User, Plus, Heart, Dog, Download, 
-  Smartphone, MapPin, Sparkles, Award, ShieldCheck, Pencil
+  History, CalendarDays, Edit3, Trash2, X, ChevronRight, 
+  CheckCircle, User, Plus, Download, MapPin, ShieldCheck, Sparkles
 } from 'lucide-react';
 
-// 1. IMPORT THE SMART TITLE COMPONENT
 import HeroTitle from "@/components/HeroTitle"; 
 import SmartCity from "@/components/SmartCity";
 
 export default function NexusMasterPortal() {
   const [activeTab, setActiveTab] = useState('experience');
   const [bookings, setBookings] = useState<any[]>([]);
-  const [pets, setPets] = useState<any[]>([]);
+  const [profiles, setProfiles] = useState<any[]>([]);
   const [isMounted, setIsMounted] = useState(false);
   
   // UI States
   const [isScheduling, setIsScheduling] = useState<any>(null); 
-  const [isPetModalOpen, setIsPetModalOpen] = useState(false);
-  const [editingPetId, setEditingPetId] = useState<number | null>(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [editingProfileId, setEditingProfileId] = useState<number | null>(null);
   const [showInstallHelp, setShowInstallHelp] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   
-  // Form States
-  const [newPet, setNewPet] = useState({ name: '', breed: '', notes: '' });
+  // Form States - Pivoted for Dental Aesthetics
+  const [newProfile, setNewProfile] = useState({ name: '', concern: '', notes: '' });
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
 
   // --- BRANDING DNA ---
-  // We keep these for colors/cities, but the Name will be handled by HeroTitle
-  const brandCity = process.env.NEXT_PUBLIC_BUSINESS_CITY || "Premium Experience";
-  const brandColor = process.env.NEXT_PUBLIC_THEME_COLOR || "#38bdf8";
+  const brandCity = process.env.NEXT_PUBLIC_BUSINESS_CITY || "Beverly Hills";
+  const brandColor = process.env.NEXT_PUBLIC_THEME_COLOR || "#0EA5E9"; // Clinical Blue
 
-  // Glassmorphism Utility (Clean & Sharp)
   const glassBase = {
-    backgroundColor: `${brandColor}10`, 
+    backgroundColor: `${brandColor}08`, 
     backdropFilter: 'blur(20px)',
     border: `1px solid ${brandColor}15`,
   };
@@ -47,13 +43,13 @@ export default function NexusMasterPortal() {
     setIsMounted(true);
     try {
       const savedBookings = localStorage.getItem('nexus_vault_data');
-      const savedPets = localStorage.getItem('nexus_pet_data');
+      const savedProfiles = localStorage.getItem('nexus_patient_data');
       if (savedBookings) setBookings(JSON.parse(savedBookings));
-      if (savedPets) setPets(JSON.parse(savedPets));
+      if (savedProfiles) setProfiles(JSON.parse(savedProfiles));
     } catch (e) {
       console.error("Resetting vault.", e);
       localStorage.removeItem('nexus_vault_data');
-      localStorage.removeItem('nexus_pet_data');
+      localStorage.removeItem('nexus_patient_data');
     }
   }, []);
 
@@ -63,7 +59,7 @@ export default function NexusMasterPortal() {
     const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
     for (let i = 0; i < 7; i++) {
       const d = new Date();
-      d.setDate(d.getDate() + i);
+      d.setDate(d.getDate() + (i + 1)); // Skip today for high-ticket bookings
       days.push(d.toLocaleDateString('en-US', options));
     }
     return days;
@@ -77,7 +73,7 @@ export default function NexusMasterPortal() {
     setBookings(updated);
     localStorage.setItem('nexus_vault_data', JSON.stringify(updated));
     setIsScheduling(null);
-    showToast("Booking Confirmed");
+    showToast("Consultation Confirmed");
   };
 
   const deleteBooking = (id: number) => {
@@ -86,40 +82,40 @@ export default function NexusMasterPortal() {
     localStorage.setItem('nexus_vault_data', JSON.stringify(updated));
   };
 
-  // --- LOGIC: PETS (ADD & EDIT) ---
-  const openPetModal = (pet?: any) => {
-    if (pet) {
-      setNewPet(pet);
-      setEditingPetId(pet.id);
+  // --- LOGIC: PROFILES (ADD & EDIT) ---
+  const openProfileModal = (profile?: any) => {
+    if (profile) {
+      setNewProfile(profile);
+      setEditingProfileId(profile.id);
     } else {
-      setNewPet({ name: '', breed: '', notes: '' });
-      setEditingPetId(null);
+      setNewProfile({ name: '', concern: '', notes: '' });
+      setEditingProfileId(null);
     }
-    setIsPetModalOpen(true);
+    setIsProfileModalOpen(true);
   };
 
-  const savePet = () => {
-    if (!newPet.name) return;
-    let updatedPets;
-    if (editingPetId) {
-      updatedPets = pets.map(p => p.id === editingPetId ? { ...newPet, id: editingPetId } : p);
+  const saveProfile = () => {
+    if (!newProfile.name) return;
+    let updatedProfiles;
+    if (editingProfileId) {
+      updatedProfiles = profiles.map(p => p.id === editingProfileId ? { ...newProfile, id: editingProfileId } : p);
       showToast("Profile Updated");
     } else {
-      const petEntry = { id: Date.now(), ...newPet };
-      updatedPets = [petEntry, ...pets];
-      showToast(`${newPet.name} Added`);
+      const profileEntry = { id: Date.now(), ...newProfile };
+      updatedProfiles = [profileEntry, ...profiles];
+      showToast(`${newProfile.name} Added`);
     }
-    setPets(updatedPets);
-    localStorage.setItem('nexus_pet_data', JSON.stringify(updatedPets));
-    setNewPet({ name: '', breed: '', notes: '' });
-    setEditingPetId(null);
-    setIsPetModalOpen(false);
+    setProfiles(updatedProfiles);
+    localStorage.setItem('nexus_patient_data', JSON.stringify(updatedProfiles));
+    setNewProfile({ name: '', concern: '', notes: '' });
+    setEditingProfileId(null);
+    setIsProfileModalOpen(false);
   };
 
-  const deletePet = (id: number) => {
-    const updated = pets.filter(p => p.id !== id);
-    setPets(updated);
-    localStorage.setItem('nexus_pet_data', JSON.stringify(updated));
+  const deleteProfile = (id: number) => {
+    const updated = profiles.filter(p => p.id !== id);
+    setProfiles(updated);
+    localStorage.setItem('nexus_patient_data', JSON.stringify(updated));
     showToast("Profile Removed");
   };
 
@@ -128,22 +124,22 @@ export default function NexusMasterPortal() {
     setTimeout(() => setToast(null), 3000);
   };
 
-  if (!isMounted) return <div className="min-h-screen bg-black" />;
+  if (!isMounted) return <div className="min-h-screen bg-[#050505]" />;
 
   return (
-    <div className="max-w-md mx-auto min-h-screen pb-32 relative bg-[#09090b] text-white selection:bg-white/20 font-sans">
+    <div className="max-w-md mx-auto min-h-screen pb-32 relative bg-[#050505] text-white selection:bg-white/20 font-sans">
       
-      {/* PREMIUM FONT IMPORT: OUTFIT */}
+      {/* PREMIUM FONT IMPORT */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap');
-        body, button, input, textarea { font-family: 'Outfit', sans-serif; }
+        body, button, input, textarea, select { font-family: 'Outfit', sans-serif; }
         h1, h2, h3 { letter-spacing: -0.02em; }
         .tracking-widest { letter-spacing: 0.2em !important; }
       `}</style>
 
       {/* BACKGROUND GLOW */}
       <div 
-        className="fixed inset-0 pointer-events-none opacity-20"
+        className="fixed inset-0 pointer-events-none opacity-10"
         style={{ background: `radial-gradient(circle at 50% -10%, ${brandColor}, transparent 80%)` }}
       />
 
@@ -151,7 +147,6 @@ export default function NexusMasterPortal() {
       <header className="px-6 pt-14 pb-8 relative z-10 flex justify-between items-start">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h1 className="text-3xl font-extrabold tracking-tight uppercase leading-none">
-            {/* 2. REPLACED STATIC TEXT WITH SMART COMPONENT */}
             <HeroTitle />
           </h1>
           <div className="flex items-center gap-2 mt-3 opacity-80">
@@ -178,11 +173,11 @@ export default function NexusMasterPortal() {
               >
                  <div className="relative h-60 w-full">
                     <img 
-                      src="https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=800" 
+                      src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?auto=format&fit=crop&q=80&w=800" 
                       className="absolute inset-0 w-full h-full object-cover"
-                      alt="Hero Pet"
+                      alt="Dental Clinic Aesthetic"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/50 to-transparent" />
                  </div>
 
                  <div className="p-6 pt-0 -mt-10 relative z-10">
@@ -190,25 +185,26 @@ export default function NexusMasterPortal() {
                       <div className="h-10 w-10 rounded-xl bg-black/60 backdrop-blur-md flex items-center justify-center border border-white/10">
                           <ShieldCheck size={20} style={{ color: brandColor }} />
                       </div>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Verified Partner</span>
+                      <span className="text-[10px] font-bold uppercase tracking-[0.2em] opacity-60">Board Certified</span>
                    </div>
-                   <h2 className="text-3xl font-bold mb-2 leading-tight">Refined Care for <br/>Your Family.</h2>
-                  <p className="text-sm text-neutral-400 leading-relaxed mb-6"> Experience boutique grooming services tailored for <SmartCity />'s elite pets. </p>
+                   <h2 className="text-3xl font-bold mb-2 leading-tight">Architects of the <br/>Perfect Smile.</h2>
+                  <p className="text-sm text-neutral-400 leading-relaxed mb-6"> Bespoke cosmetic dentistry in <SmartCity />. Combining advanced clinical precision with an artistic eye. </p>
                    
                    <button 
-                    onClick={() => setIsScheduling({name: "Premium Session", price: "$120"})}
+                    onClick={() => setIsScheduling({name: "Comprehensive Assessment", price: "$250"})}
                     style={{ backgroundColor: brandColor }}
                     className="w-full py-4 rounded-xl text-black font-bold text-xs uppercase tracking-[0.1em] shadow-lg active:scale-95 transition-all"
                    >
-                     Reserve Now
+                     Book Initial Assessment
                    </button>
                  </div>
               </div>
 
-              {/* SERVICES GRID */}
+              {/* HIGH-TICKET SERVICES GRID */}
               <div className="grid grid-cols-1 gap-3">
-                <ServiceCard color={brandColor} glass={glassBase} name="Essential Session" price="$65" onSelect={() => setIsScheduling({name: "Essential Session", price: "$65"})} />
-                <ServiceCard color={brandColor} glass={glassBase} name="Full Grooming" price="$95" onSelect={() => setIsScheduling({name: "Full Grooming", price: "$95"})} />
+                <ServiceCard color={brandColor} glass={glassBase} name="Signature Veneers Consult" price="$150" onSelect={() => setIsScheduling({name: "Veneers Consultation", price: "$150"})} />
+                <ServiceCard color={brandColor} glass={glassBase} name="Invisalign® Scan & Plan" price="$95" onSelect={() => setIsScheduling({name: "Invisalign® Consult", price: "$95"})} />
+                <ServiceCard color={brandColor} glass={glassBase} name="Zoom!® Laser Whitening" price="$650" onSelect={() => setIsScheduling({name: "Laser Whitening", price: "$650"})} />
               </div>
             </motion.div>
           )}
@@ -218,7 +214,7 @@ export default function NexusMasterPortal() {
                 {bookings.length === 0 ? (
                   <div style={glassBase} className="py-20 text-center rounded-[2rem] flex flex-col items-center border border-white/5">
                       <History size={32} className="opacity-20 mb-4" />
-                      <p className="opacity-40 text-xs font-bold uppercase tracking-widest">No Past History</p>
+                      <p className="opacity-40 text-xs font-bold uppercase tracking-widest">No Active Bookings</p>
                   </div>
                 ) : (
                   bookings.map(b => (
@@ -234,29 +230,28 @@ export default function NexusMasterPortal() {
               </motion.div>
           )}
 
-          {activeTab === 'family' && (
-            <motion.div key="family" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-              {pets.map(p => (
+          {activeTab === 'profiles' && (
+            <motion.div key="profiles" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
+              {profiles.map(p => (
                 <div key={p.id} style={glassBase} className="p-5 rounded-[2rem] flex items-center justify-between border border-white/5 group">
                   <div className="flex items-center gap-5">
                     <div className="h-12 w-12 bg-white/5 border border-white/5 rounded-xl flex items-center justify-center text-xl font-bold" style={{ color: brandColor }}>{p.name[0]}</div>
                     <div>
                         <h4 className="text-white font-bold">{p.name}</h4>
-                        <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">{p.breed}</p>
+                        <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest">{p.concern}</p>
                     </div>
                   </div>
-                  {/* EDIT BUTTON */}
                   <div className="flex gap-2">
-                      <button onClick={() => openPetModal(p)} className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-all">
+                      <button onClick={() => openProfileModal(p)} className="h-10 w-10 bg-white/5 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/10 transition-all">
                         <Edit3 size={16}/>
                       </button>
-                      <button onClick={() => deletePet(p.id)} className="h-10 w-10 bg-red-500/5 rounded-xl flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all">
+                      <button onClick={() => deleteProfile(p.id)} className="h-10 w-10 bg-red-500/5 rounded-xl flex items-center justify-center text-red-500/50 hover:text-red-500 hover:bg-red-500/10 transition-all">
                         <Trash2 size={16}/>
                       </button>
                   </div>
                 </div>
               ))}
-              <button onClick={() => openPetModal()} className="w-full py-5 border border-dashed border-white/10 rounded-[2rem] text-neutral-400 font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 active:scale-95 transition-all">+ Add Profile</button>
+              <button onClick={() => openProfileModal()} className="w-full py-5 border border-dashed border-white/10 rounded-[2rem] text-neutral-400 font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-white/5 active:scale-95 transition-all">+ Add Patient Profile</button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -264,19 +259,19 @@ export default function NexusMasterPortal() {
 
       {/* NAVIGATION */}
       <nav className="fixed bottom-8 left-8 right-8 z-50">
-        <div className="bg-[#09090b]/80 backdrop-blur-xl border border-white/10 rounded-full p-2 flex justify-between items-center shadow-2xl">
-          <NavBtn active={activeTab === 'experience'} icon={<ShoppingBag size={20}/>} label="Book" onClick={() => setActiveTab('experience')} color={brandColor} />
-          <NavBtn active={activeTab === 'vault'} icon={<History size={20}/>} label="Vault" onClick={() => setActiveTab('vault')} color={brandColor} />
-          <NavBtn active={activeTab === 'family'} icon={<User size={20}/>} label="Pets" onClick={() => setActiveTab('family')} color={brandColor} />
+        <div className="bg-[#050505]/90 backdrop-blur-xl border border-white/10 rounded-full p-2 flex justify-between items-center shadow-2xl">
+          <NavBtn active={activeTab === 'experience'} icon={<Sparkles size={20}/>} label="Services" onClick={() => setActiveTab('experience')} color={brandColor} />
+          <NavBtn active={activeTab === 'vault'} icon={<CalendarDays size={20}/>} label="Visits" onClick={() => setActiveTab('vault')} color={brandColor} />
+          <NavBtn active={activeTab === 'profiles'} icon={<User size={20}/>} label="Profile" onClick={() => setActiveTab('profiles')} color={brandColor} />
         </div>
       </nav>
 
       {/* SCHEDULING MODAL */}
       <AnimatePresence>
         {isScheduling && (
-          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[100] bg-[#09090b] p-8 flex flex-col">
+          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[100] bg-[#050505] p-8 flex flex-col">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl font-bold">Select Time</h2>
+              <h2 className="text-2xl font-bold">Request Time</h2>
               <button onClick={() => setIsScheduling(null)} className="h-10 w-10 bg-white/5 rounded-full flex items-center justify-center"><X size={20}/></button>
             </div>
             <div className="space-y-8 flex-1 overflow-y-auto">
@@ -291,34 +286,42 @@ export default function NexusMasterPortal() {
                     </div>
                 </section>
                 <section>
-                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-4">Time</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest opacity-40 mb-4">Time Preference</p>
                     <div className="grid grid-cols-3 gap-2">
-                        {['09:00', '12:00', '15:00'].map(t => (
+                        {['Morning', 'Mid-Day', 'Afternoon'].map(t => (
                             <button key={t} onClick={() => setSelectedTime(t)} className={`py-4 rounded-xl text-[10px] font-bold border transition-all ${selectedTime === t ? 'bg-white text-black' : 'bg-white/5 border-white/5 text-white/40'}`}>{t}</button>
                         ))}
                     </div>
                 </section>
             </div>
-            <button disabled={!selectedDate || !selectedTime} onClick={saveBooking} style={{ backgroundColor: brandColor }} className="w-full py-5 rounded-2xl text-black font-bold text-xs uppercase tracking-[0.2em] disabled:opacity-20 active:scale-95 transition-all">Confirm</button>
+            <button disabled={!selectedDate || !selectedTime} onClick={saveBooking} style={{ backgroundColor: brandColor }} className="w-full py-5 rounded-2xl text-black font-bold text-xs uppercase tracking-[0.2em] disabled:opacity-20 active:scale-95 transition-all">Submit Request</button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* PET MODAL (ADD & EDIT) */}
+      {/* PATIENT INTAKE MODAL (HIPAA Safe Form) */}
       <AnimatePresence>
-        {isPetModalOpen && (
-          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[100] bg-[#09090b] p-8 flex flex-col">
+        {isProfileModalOpen && (
+          <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[100] bg-[#050505] p-8 flex flex-col">
             <div className="flex justify-between items-center mb-10">
-              <h2 className="text-2xl font-bold">{editingPetId ? 'Edit Profile' : 'New Profile'}</h2>
-              <button onClick={() => setIsPetModalOpen(false)} className="h-10 w-10 bg-white/5 rounded-full flex items-center justify-center"><X size={20}/></button>
+              <h2 className="text-2xl font-bold">{editingProfileId ? 'Update Profile' : 'Intake Details'}</h2>
+              <button onClick={() => setIsProfileModalOpen(false)} className="h-10 w-10 bg-white/5 rounded-full flex items-center justify-center"><X size={20}/></button>
             </div>
             <div className="space-y-4 flex-1">
-              <input type="text" placeholder="Pet Name" value={newPet.name} onChange={e => setNewPet({...newPet, name: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all" />
-              <input type="text" placeholder="Breed / Type" value={newPet.breed} onChange={e => setNewPet({...newPet, breed: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all" />
-              <textarea placeholder="Medical Notes / Preferences" value={newPet.notes} onChange={e => setNewPet({...newPet, notes: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all h-32 resize-none" />
+              <input type="text" placeholder="Legal First & Last Name" value={newProfile.name} onChange={e => setNewProfile({...newProfile, name: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all" />
+              
+              <select value={newProfile.concern} onChange={e => setNewProfile({...newProfile, concern: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all appearance-none">
+                <option value="" disabled className="text-black">Primary Aesthetic Goal</option>
+                <option value="Straightening / Invisalign" className="text-black">Straightening / Invisalign</option>
+                <option value="Brightening / Whitening" className="text-black">Brightening / Whitening</option>
+                <option value="Restoration / Veneers" className="text-black">Restoration / Veneers</option>
+                <option value="General Consultation" className="text-black">General Consultation</option>
+              </select>
+
+              <textarea placeholder="Tell us about your timeline or goals (e.g., Upcoming wedding, fixing a chipped tooth). Do not include sensitive medical history." value={newProfile.notes} onChange={e => setNewProfile({...newProfile, notes: e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-xl p-5 text-sm text-white focus:outline-none focus:border-white/30 transition-all h-32 resize-none" />
             </div>
-            <button onClick={savePet} style={{ backgroundColor: brandColor }} className="w-full py-5 rounded-2xl text-black font-bold text-xs uppercase tracking-[0.2em] active:scale-95 transition-all">
-                {editingPetId ? 'Update Profile' : 'Save Profile'}
+            <button onClick={saveProfile} style={{ backgroundColor: brandColor }} className="w-full py-5 rounded-2xl text-black font-bold text-xs uppercase tracking-[0.2em] active:scale-95 transition-all">
+                {editingProfileId ? 'Save Changes' : 'Create Profile'}
             </button>
           </motion.div>
         )}
@@ -331,9 +334,9 @@ export default function NexusMasterPortal() {
       <AnimatePresence>
         {showInstallHelp && (
           <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} className="fixed inset-0 z-[150] bg-black/95 backdrop-blur-xl p-8 flex flex-col items-center justify-center text-center">
-            <Smartphone size={48} className="text-white mb-6" />
+            <Download size={48} className="text-white mb-6" />
             <h2 className="text-2xl font-bold text-white mb-4">Install App</h2>
-            <p className="text-neutral-400 text-sm mb-8">Tap 'Share' and select 'Add to Home Screen' for the best experience.</p>
+            <p className="text-neutral-400 text-sm mb-8">Tap 'Share' and select 'Add to Home Screen' for the ultimate concierge experience.</p>
             <button onClick={() => setShowInstallHelp(false)} className="px-8 py-3 bg-white text-black font-bold uppercase tracking-widest text-[10px] rounded-full">Got it</button>
           </motion.div>
         )}
@@ -344,8 +347,8 @@ export default function NexusMasterPortal() {
 
 function ServiceCard({ name, price, onSelect, glass, color }: any) {
   return (
-    <div onClick={onSelect} style={glass} className="p-6 rounded-[1.5rem] flex justify-between items-center active:scale-[0.98] transition-all border border-white/5">
-      <div><h4 className="text-white font-bold text-lg">{name}</h4><p className="text-neutral-500 text-xs mt-1">Bespoke Session</p></div>
+    <div onClick={onSelect} style={glass} className="p-6 rounded-[1.5rem] flex justify-between items-center active:scale-[0.98] cursor-pointer transition-all border border-white/5">
+      <div><h4 className="text-white font-bold text-lg">{name}</h4><p className="text-neutral-500 text-xs mt-1">Clinical Procedure</p></div>
       <div className="text-right">
         <span className="text-white text-xl block mb-1 font-bold">{price}</span>
         <div className="flex items-center justify-end gap-1 text-[9px] font-bold uppercase tracking-widest" style={{ color }}>Details <ChevronRight size={14} /></div>
